@@ -1,0 +1,3 @@
+[gd_scene format=3 uid="uid://iqegvekice06"]
+
+[node name="TopDownWorld" type="Node2D"]

@@ -1,0 +1,39 @@
+[gd_scene load_steps=4 format=3 uid="uid://c0rbvbnm56q68"]
+
+[ext_resource type="Script" path="res://main_menu.gd" id="1_72650"]
+[ext_resource type="PackedScene" uid="uid://du5aliejclnhp" path="res://platformer_world.tscn" id="2_kve68"]
+[ext_resource type="PackedScene" uid="uid://iqegvekice06" path="res://top_down_world.tscn" id="3_e4cwc"]
+
+[node name="MainMenu" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_72650")
+platformer_world_scene = ExtResource("2_kve68")
+top_down_world_scene = ExtResource("3_e4cwc")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 13
+anchor_left = 0.5
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -139.0
+offset_right = 139.0
+grow_horizontal = 2
+grow_vertical = 2
+alignment = 1
+
+[node name="Button_EnterPlatformer" type="Button" parent="VBoxContainer"]
+layout_mode = 2
+text = "2D Platformer"
+
+[node name="Button_EnterTopDown" type="Button" parent="VBoxContainer"]
+layout_mode = 2
+text = "2D Top Down"
+
+[connection signal="pressed" from="VBoxContainer/Button_EnterPlatformer" to="." method="_on_button_enter_platformer_pressed"]
+[connection signal="pressed" from="VBoxContainer/Button_EnterTopDown" to="." method="_on_button_enter_top_down_pressed"]
