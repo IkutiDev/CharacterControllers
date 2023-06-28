@@ -12,9 +12,9 @@ dest_files=["res://.godot/imported/Character Idle Rig 48x48.aseprite-82fed42fac9
 
 [params]
 
-spritesheet/layout="Packed"
+spritesheet/layout="By rows"
 spritesheet/fixed_rows_count=1
-spritesheet/fixed_columns_count=1
+spritesheet/fixed_columns_count=2
 spritesheet/border_type="None"
 spritesheet/trim=false
 spritesheet/ignore_empty=false

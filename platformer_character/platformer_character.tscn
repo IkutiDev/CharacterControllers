@@ -1,0 +1,31 @@
+[gd_scene load_steps=5 format=3 uid="uid://dd13anvv8vkkh"]
+
+[ext_resource type="SpriteFrames" uid="uid://bxbkyqosiguym" path="res://platformer_character/art/platformer_character.tres" id="1_l8csa"]
+[ext_resource type="Script" path="res://platformer_character/platformer_character.gd" id="1_naghe"]
+[ext_resource type="Script" path="res://platformer_character/PlatformerCharacterVisual.gd" id="3_pebxn"]
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_vosno"]
+
+[node name="PlatformerCharacter" type="CharacterBody2D"]
+collision_mask = 2
+script = ExtResource("1_naghe")
+max_speed = 9.0
+max_acceleration = 79.0
+max_deceleration = 76.0
+max_turn_speed = 76.0
+max_air_acceleration = 44.0
+max_air_deceleration = 76.0
+max_air_turn_speed = 76.0
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(-0.5, -15)
+shape = SubResource("CapsuleShape2D_vosno")
+
+[node name="PlatformerCharacterVisual" type="AnimatedSprite2D" parent="." node_paths=PackedStringArray("character_controller")]
+position = Vector2(0, -16)
+sprite_frames = ExtResource("1_l8csa")
+animation = &"idle"
+autoplay = "idle"
+frame_progress = 0.201931
+script = ExtResource("3_pebxn")
+character_controller = NodePath("..")

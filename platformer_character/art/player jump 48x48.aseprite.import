@@ -12,9 +12,9 @@ dest_files=["res://.godot/imported/player jump 48x48.aseprite-63202d393e9206133b
 
 [params]
 
-spritesheet/layout="Packed"
+spritesheet/layout="By rows"
 spritesheet/fixed_rows_count=1
-spritesheet/fixed_columns_count=1
+spritesheet/fixed_columns_count=2
 spritesheet/border_type="None"
 spritesheet/trim=false
 spritesheet/ignore_empty=false

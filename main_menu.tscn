@@ -1,7 +1,7 @@
 [gd_scene load_steps=4 format=3 uid="uid://c0rbvbnm56q68"]
 
 [ext_resource type="Script" path="res://main_menu.gd" id="1_72650"]
-[ext_resource type="PackedScene" uid="uid://du5aliejclnhp" path="res://platformer_world.tscn" id="2_kve68"]
+[ext_resource type="PackedScene" uid="uid://kpreyylbb70t" path="res://platformer_world.tscn" id="2_kve68"]
 [ext_resource type="PackedScene" uid="uid://iqegvekice06" path="res://top_down_world.tscn" id="3_e4cwc"]
 
 [node name="MainMenu" type="Control"]

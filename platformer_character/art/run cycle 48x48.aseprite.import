@@ -12,9 +12,9 @@ dest_files=["res://.godot/imported/run cycle 48x48.aseprite-521a1d0b42f96e67c56f
 
 [params]
 
-spritesheet/layout="Packed"
+spritesheet/layout="By rows"
 spritesheet/fixed_rows_count=1
-spritesheet/fixed_columns_count=1
+spritesheet/fixed_columns_count=2
 spritesheet/border_type="None"
 spritesheet/trim=false
 spritesheet/ignore_empty=false
