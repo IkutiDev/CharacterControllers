@@ -111,8 +111,6 @@ func _physics_process(delta: float) -> void:
 			run_without_acceleration(delta)
 		else:
 			run_with_acceleration(delta)
-	
-	print(velocity)
 
 	jump_process(delta)
 
@@ -143,6 +141,7 @@ func run_without_acceleration(delta: float):
 
 func set_gravity() -> void:
 	var new_gravity : Vector2 = Vector2(0, (-2 * jump_height) / (time_to_jump_apex * time_to_jump_apex))
+	print(gravity_multiplier)
 	gravity_scale = (new_gravity.y / gravity) * gravity_multiplier * movement_multiplier
 
 func jump_process(delta: float) -> void:
@@ -163,10 +162,9 @@ func jump_process(delta: float) -> void:
 func calculate_gravity(delta: float) -> void:
 	# Add the gravity.
 	if not is_on_floor():
-		velocity.y += gravity * delta
+		velocity.y += gravity * delta * (-gravity_scale)
 
 	if velocity.y < -0.01:
-		print("up")
 		if is_on_floor():
 			gravity_multiplier = default_gravity_scale
 		else:
@@ -178,7 +176,6 @@ func calculate_gravity(delta: float) -> void:
 			else:
 				gravity_multiplier = upward_movement_multiplier
 	elif velocity.y > 0.01:
-		print("down")
 		if is_on_floor():
 			gravity_multiplier = default_gravity_scale
 		elif coyote_time_counter > 0:
@@ -186,7 +183,6 @@ func calculate_gravity(delta: float) -> void:
 		else:
 			gravity_multiplier = downward_movement_multiplier
 	else:
-		print("on ground")
 		if is_on_floor():
 			currently_jumping = false
 		gravity_multiplier = default_gravity_scale
@@ -202,9 +198,6 @@ func do_a_jump() -> void:
 
 		can_jump_again = max_air_jumps == 1 and can_jump_again == false
 
-		print("Buffer "+str(jump_buffer_counter))
-		print("Jump stuff " + str(gravity) + " " + str(gravity_scale) + " " + str(jump_height) +" " + str(gravity_multiplier))
-
 		jump_speed = sqrt(-2.0 * gravity * gravity_scale * jump_height * movement_multiplier)
 
 		if velocity.y < 0.0:
@@ -212,7 +205,6 @@ func do_a_jump() -> void:
 		elif velocity.y > 0.0:
 			jump_speed -= abs(velocity.y)
 
-		print("Jump later" + str(jump_speed))
 
 		velocity.y -= jump_speed
 		currently_jumping = true
