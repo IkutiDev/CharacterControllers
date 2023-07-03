@@ -1,30 +1,57 @@
 class_name PlatformerCharacter
 extends CharacterBody2D
 
+
+## A simple 2d platformer controller based on GMTK platformer controller
+##
+## This script is a rewritten GMTK character controller for 2d platformers, inside godot.
+## There will be also added extra features that GMTK character controller doesn't posses
+##
+## @tutorial(GMTK Platformer Toolkit):            https://gmtk.itch.io/platformer-toolkit
+
 signal jumped
 
 const movement_multiplier = 32.0
 
 @export_category("Movement")
+
+## Maximum movement speed
 @export_range(0, 20) var max_speed : float
+## How fast to reach max speed
 @export_range(0, 100) var max_acceleration : float
+## How fast to stop after letting go
 @export_range(0, 100) var max_deceleration : float
+## How fast to stop when changing direction
 @export_range(0, 100) var max_turn_speed : float
+## How fast to reach max speed when in mid-air
 @export_range(0, 100) var max_air_acceleration : float
+## How fast to stop in mid-air when no direction is used
 @export_range(0, 100) var max_air_deceleration : float
+## How fast to stop when changing direction when in mid-air
 @export_range(0, 100) var max_air_turn_speed : float
+## When false, the charcter will skip acceleration and deceleration and instantly move and stop
 @export var use_acceleration : bool
 @export_category("Jumping")
+## Maximum jump height
 @export_range(2, 5.5) var jump_height : float
+## How long it takes to reach that height before coming back down
 @export_range(0.2, 1.25) var time_to_jump_apex  : float
+## Gravity multiplier to apply when going up
 @export_range(0, 5) var upward_movement_multiplier : float
+## Gravity multiplier to apply when coming down
 @export_range(1, 10) var downward_movement_multiplier  : float
+## How many times can you jump in the air
 @export_range(0, 1) var max_air_jumps : int
 @export_category("Jumping Advanced")
+## Should the character drop when you let go of jump?
 @export var variable_jump_height : bool
+## Gravity multiplier when you let go of jump
 @export_range(1, 10) var jump_cut_off : float
+## The fastest speed the character can be when in air
 @export var in_air_speed_limit : float
+## How long should coyote time last?
 @export_range(0, 0.3) var coyote_time : float
+## How far from ground should we cache your jump?
 @export_range(0, 0.3) var jump_buffer : float
 
 # Calculations
