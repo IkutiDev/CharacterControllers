@@ -53,6 +53,7 @@ const movement_multiplier = 32.0
 @export_range(0, 0.3) var coyote_time : float
 ## How far from ground should we cache your jump?
 @export_range(0, 0.3) var jump_buffer : float
+@export_range(0, 2) var grab_time : float
 
 # Calculations
 var direction_x : float
@@ -76,6 +77,9 @@ var jump_buffer_counter : float
 var coyote_time_counter : float
 var pressing_jump : bool
 var currently_jumping : bool
+var on_wall : bool
+var is_grabbing : bool
+var remaining_grab_time : float
 
 var rng = RandomNumberGenerator.new()
 
@@ -89,6 +93,7 @@ func _enter_tree() -> void:
 func _input(event : InputEvent) -> void:
 	on_move(event)
 	on_jump(event)
+	on_grab(event)
 	
 
 func on_move(event : InputEvent) -> void:
@@ -104,9 +109,24 @@ func on_jump(event: InputEvent) -> void:
 		pressing_jump = true
 	if event.is_action_released("jump"):
 		pressing_jump = false
+		
+func on_grab(event: InputEvent) -> void:
+	if event.is_action_pressed("grab"):
+		is_grabbing = true
+		
+	if event.is_action_released("grab"):
+		is_grabbing = false
 
 func _process(delta: float) -> void:
 	# In here reset direction_x to zero if we have the ability to stop character movement
+	
+	if is_on_wall_only() and is_grabbing:
+		remaining_grab_time -= delta
+		if remaining_grab_time <= 0:
+			remaining_grab_time = grab_time
+			is_grabbing = false
+	elif is_on_floor():
+		remaining_grab_time = grab_time
 
 	if direction_x != 0:
 		pressing_movement_key = true
@@ -130,14 +150,14 @@ func _process(delta: float) -> void:
 
  
 func _physics_process(delta: float) -> void:
-
-	if use_acceleration:
-		run_with_acceleration(delta)
-	else:
-		if is_on_floor():
-			run_without_acceleration(delta)
-		else:
+	if not is_on_wall_only() or not is_grabbing:
+		if use_acceleration:
 			run_with_acceleration(delta)
+		else:
+			if is_on_floor():
+				run_without_acceleration(delta)
+			else:
+				run_with_acceleration(delta)
 
 	jump_process(delta)
 
@@ -168,7 +188,7 @@ func run_without_acceleration(delta: float):
 
 func set_gravity() -> void:
 	var new_gravity : Vector2 = Vector2(0, (-2 * jump_height) / (time_to_jump_apex * time_to_jump_apex))
-	print(gravity_multiplier)
+	#print(gravity_multiplier)
 	gravity_scale = (new_gravity.y / gravity) * gravity_multiplier * movement_multiplier
 
 func jump_process(delta: float) -> void:
@@ -187,6 +207,12 @@ func jump_process(delta: float) -> void:
 
 
 func calculate_gravity(delta: float) -> void:
+	if is_on_wall_only() and is_grabbing:
+		if velocity.y < 0:
+			velocity.y = 0
+		currently_jumping = false
+		return
+	
 	# Add the gravity.
 	if not is_on_floor():
 		velocity.y += gravity * delta * (-gravity_scale)
@@ -217,24 +243,34 @@ func calculate_gravity(delta: float) -> void:
 	velocity.y = clamp(velocity.y, -in_air_speed_limit, 1000)
 
 func do_a_jump() -> void:
+	if is_on_wall_only() and is_grabbing:
+		do_a_jump_calc()
+		is_grabbing = false
+		
+		#velocity.x = move_toward(velocity.x, -desired_velocity.x, max_speed_change)
+		return
+	
 	if is_on_floor() or (coyote_time_counter > 0.03 and coyote_time_counter < coyote_time) or can_jump_again:
-		jumped.emit()
-		desired_jump = false
-		jump_buffer_counter = 0
-		coyote_time_counter = 0
+		do_a_jump_calc()
+		
+func do_a_jump_calc() -> void:
+	jumped.emit()
+	desired_jump = false
+	jump_buffer_counter = 0
+	coyote_time_counter = 0
 
-		can_jump_again = max_air_jumps == 1 and can_jump_again == false
+	can_jump_again = max_air_jumps == 1 and can_jump_again == false
 
-		jump_speed = sqrt(-2.0 * gravity * gravity_scale * jump_height * movement_multiplier)
+	jump_speed = sqrt(-2.0 * gravity * gravity_scale * jump_height * movement_multiplier)
 
-		if velocity.y < 0.0:
-			jump_speed = max(jump_speed - velocity.y, 0.0)
-		elif velocity.y > 0.0:
-			jump_speed -= abs(velocity.y)
+	if velocity.y < 0.0:
+		jump_speed = max(jump_speed - velocity.y, 0.0)
+	elif velocity.y > 0.0:
+		jump_speed -= abs(velocity.y)
 
 
-		velocity.y -= jump_speed
-		currently_jumping = true
+	velocity.y -= jump_speed
+	currently_jumping = true
 
 	if jump_buffer == 0:
 		desired_jump = false

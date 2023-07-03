@@ -40,6 +40,7 @@ jump_cut_off = 2.9
 in_air_speed_limit = 1000.0
 coyote_time = 0.2
 jump_buffer = 0.2
+grab_time = 2.0
 
 [node name="RemoteTransform2D" type="RemoteTransform2D" parent="PlatformerCharacter"]
 remote_path = NodePath("../../Camera2D")
