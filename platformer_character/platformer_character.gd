@@ -10,6 +10,7 @@ extends CharacterBody2D
 ## @tutorial(GMTK Platformer Toolkit):            https://gmtk.itch.io/platformer-toolkit
 
 signal jumped
+signal wall_grabbed
 
 const movement_multiplier = 32.0
 
@@ -31,6 +32,11 @@ const movement_multiplier = 32.0
 @export_range(0, 100) var max_air_turn_speed : float
 ## When false, the charcter will skip acceleration and deceleration and instantly move and stop
 @export var use_acceleration : bool
+@export_category("Climbing")
+## Do we want enable grabing the wall/climbing mechanics?
+@export var enable_climbing : bool
+## How long should grab time last?
+@export_range(0, 2) var grab_time : float
 @export_category("Jumping")
 ## Maximum jump height
 @export_range(2, 5.5) var jump_height : float
@@ -53,10 +59,11 @@ const movement_multiplier = 32.0
 @export_range(0, 0.3) var coyote_time : float
 ## How far from ground should we cache your jump?
 @export_range(0, 0.3) var jump_buffer : float
-@export_range(0, 2) var grab_time : float
+
 
 # Calculations
 var direction_x : float
+var direction_y : float
 var desired_velocity : Vector2
 var max_speed_change : float
 var acceleration : float
@@ -70,6 +77,7 @@ var gravity_multiplier : float
 # States
 # Movement
 var pressing_movement_key : bool
+var walk_mode_toggled : bool
 # Jumping
 var can_jump_again : bool
 var desired_jump : bool
@@ -79,6 +87,7 @@ var pressing_jump : bool
 var currently_jumping : bool
 var on_wall : bool
 var is_grabbing : bool
+var desired_grab : bool
 var remaining_grab_time : float
 
 var rng = RandomNumberGenerator.new()
@@ -93,15 +102,37 @@ func _enter_tree() -> void:
 func _input(event : InputEvent) -> void:
 	on_move(event)
 	on_jump(event)
-	on_grab(event)
-	
+	if enable_climbing:
+		on_grab(event)
+		on_climb(event)
 
 func on_move(event : InputEvent) -> void:
 	# Check here if character should be able to move or not
 	# For example, maybe character shouldn't be able to move when they get hurt and tp to last check point and when they die and game is reset
 	# or we want to stop it's moving during story bit
-	if event.is_action("move_left") or event.is_action("move_right"):
-		direction_x = Input.get_axis("move_left","move_right")
+	
+
+
+	var gamepad_input_dir = Input.get_axis("move_left_gamepad","move_right_gamepad")
+	var input_dir = Input.get_axis("move_left","move_right")
+
+	if gamepad_input_dir!=0:
+		direction_x = sign(gamepad_input_dir)
+	else:
+		direction_x = input_dir
+
+func on_climb(event: InputEvent) -> void:
+	# Check here if character should be able to move or not
+	# For example, maybe character shouldn't be able to move when they get hurt and tp to last check point and when they die and game is reset
+	# or we want to stop it's moving during story bit
+
+	var gamepad_input_dir = Input.get_axis("move_up_gamepad","move_down_gamepad")
+	var input_dir = Input.get_axis("move_up","move_down")
+
+	if gamepad_input_dir!=0:
+		direction_y = sign(gamepad_input_dir)
+	else:
+		direction_y = input_dir
 
 func on_jump(event: InputEvent) -> void:
 	if event.is_action_pressed("jump"):
@@ -113,14 +144,18 @@ func on_jump(event: InputEvent) -> void:
 func on_grab(event: InputEvent) -> void:
 	if event.is_action_pressed("grab"):
 		is_grabbing = true
+		desired_grab = true
 		
 	if event.is_action_released("grab"):
 		is_grabbing = false
-
+		
 func _process(delta: float) -> void:
 	# In here reset direction_x to zero if we have the ability to stop character movement
 	
 	if is_on_wall_only() and is_grabbing:
+		if desired_grab:
+			desired_grab = false
+			wall_grabbed.emit()
 		remaining_grab_time -= delta
 		if remaining_grab_time <= 0:
 			remaining_grab_time = grab_time
@@ -133,7 +168,7 @@ func _process(delta: float) -> void:
 	else:
 		pressing_movement_key = false
 
-	desired_velocity = Vector2(direction_x, 0) * max_speed * movement_multiplier
+	desired_velocity = Vector2(direction_x, direction_y) * max_speed * movement_multiplier
 
 	if jump_buffer > 0:
 		if desired_jump:
@@ -158,8 +193,11 @@ func _physics_process(delta: float) -> void:
 				run_without_acceleration(delta)
 			else:
 				run_with_acceleration(delta)
-
+	
 	jump_process(delta)
+	
+	if is_on_wall_only() and is_grabbing:
+		climb_without_acceleration(delta)
 
 	move_and_slide()
 
@@ -183,12 +221,14 @@ func run_with_acceleration(delta: float) -> void:
 
 func run_without_acceleration(delta: float):
 	velocity.x = desired_velocity.x
+	
+func climb_without_acceleration(delta: float):
+	velocity.y = desired_velocity.y
 
 # JUMP FUNCS
 
 func set_gravity() -> void:
 	var new_gravity : Vector2 = Vector2(0, (-2 * jump_height) / (time_to_jump_apex * time_to_jump_apex))
-	#print(gravity_multiplier)
 	gravity_scale = (new_gravity.y / gravity) * gravity_multiplier * movement_multiplier
 
 func jump_process(delta: float) -> void:
@@ -208,7 +248,7 @@ func jump_process(delta: float) -> void:
 
 func calculate_gravity(delta: float) -> void:
 	if is_on_wall_only() and is_grabbing:
-		if velocity.y < 0:
+		if velocity.y != 0:
 			velocity.y = 0
 		currently_jumping = false
 		return
