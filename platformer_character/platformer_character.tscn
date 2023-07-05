@@ -24,7 +24,8 @@ shape = SubResource("CapsuleShape2D_vosno")
 [node name="PlatformerCharacterVisual" type="AnimatedSprite2D" parent="." node_paths=PackedStringArray("character_controller")]
 position = Vector2(0, -16)
 sprite_frames = ExtResource("1_l8csa")
-animation = &"idle"
+animation = &"walk"
 autoplay = "idle"
+frame_progress = 0.0286085
 script = ExtResource("3_pebxn")
 character_controller = NodePath("..")

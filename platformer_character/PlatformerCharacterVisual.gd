@@ -25,9 +25,9 @@ func _process(delta: float) -> void:
 		play("jump_down")
 	
 	if 	wall_grabbed:
-		if character_controller.velocity.y != 0 and animation != "wall_climb":
+		if character_controller.velocity.y != 0:
 			play("wall_climb")
-		elif character_controller.velocity.y == 0 and animation != "wall_grab":
+		elif character_controller.velocity.y == 0:
 			play("wall_grab")
 	
 	if not character_controller.is_grabbing:
@@ -56,7 +56,10 @@ func movement() -> void:
 	else:
 		if landed:
 			landed = false
-		play("run")
+		if character_controller.walk_mode_toggled:
+			play("walk")
+		else:
+			play("run")
 
 func jump() -> void:
 	play("jump_up")

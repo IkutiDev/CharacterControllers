@@ -31,6 +31,7 @@ max_air_acceleration = 43.6
 max_air_deceleration = 9.6
 max_air_turn_speed = 43.6
 use_acceleration = true
+enable_climbing = true
 grab_time = 2.0
 jump_height = 5.5
 time_to_jump_apex = 0.65

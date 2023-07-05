@@ -110,7 +110,8 @@ func on_move(event : InputEvent) -> void:
 	# Check here if character should be able to move or not
 	# For example, maybe character shouldn't be able to move when they get hurt and tp to last check point and when they die and game is reset
 	# or we want to stop it's moving during story bit
-	
+	if event.is_action_pressed("toggle_walk"):
+		walk_mode_toggled = not walk_mode_toggled
 
 
 	var gamepad_input_dir = Input.get_axis("move_left_gamepad","move_right_gamepad")
@@ -198,7 +199,10 @@ func _physics_process(delta: float) -> void:
 	
 	if is_on_wall_only() and is_grabbing:
 		climb_without_acceleration(delta)
-
+	
+	if walk_mode_toggled and is_on_floor():
+		velocity.x = velocity.x / 3
+	
 	move_and_slide()
 
 # MOVEMENT FUNCS
