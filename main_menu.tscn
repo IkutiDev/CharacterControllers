@@ -1,8 +1,10 @@
-[gd_scene load_steps=4 format=3 uid="uid://c0rbvbnm56q68"]
+[gd_scene load_steps=6 format=3 uid="uid://c0rbvbnm56q68"]
 
 [ext_resource type="Script" path="res://main_menu.gd" id="1_72650"]
 [ext_resource type="PackedScene" uid="uid://kpreyylbb70t" path="res://platformer_world.tscn" id="2_kve68"]
 [ext_resource type="PackedScene" uid="uid://iqegvekice06" path="res://top_down_world.tscn" id="3_e4cwc"]
+[ext_resource type="Script" path="res://sound_slider.gd" id="4_wv6sb"]
+[ext_resource type="AudioStream" uid="uid://b1pgpjs2vx71t" path="res://Sounds/reverb-001.mp3" id="5_iganx"]
 
 [node name="MainMenu" type="Control"]
 layout_mode = 3
@@ -16,6 +18,7 @@ platformer_world_scene = ExtResource("2_kve68")
 top_down_world_scene = ExtResource("3_e4cwc")
 
 [node name="VBoxContainer" type="VBoxContainer" parent="."]
+custom_minimum_size = Vector2(0, 31)
 layout_mode = 1
 anchors_preset = 13
 anchor_left = 0.5
@@ -34,6 +37,39 @@ text = "2D Platformer"
 [node name="Button_EnterTopDown" type="Button" parent="VBoxContainer"]
 layout_mode = 2
 text = "2D Top Down"
+
+[node name="music_label" type="RichTextLabel" parent="VBoxContainer"]
+layout_mode = 2
+bbcode_enabled = true
+text = "[center]Music[/center]"
+fit_content = true
+
+[node name="MusicSlider" type="HSlider" parent="VBoxContainer"]
+layout_mode = 2
+max_value = 1.0
+step = 0.001
+value = 1.0
+script = ExtResource("4_wv6sb")
+bus_name = "Music"
+
+[node name="sfx_label" type="RichTextLabel" parent="VBoxContainer"]
+layout_mode = 2
+bbcode_enabled = true
+text = "[center]SFX[/center]"
+fit_content = true
+
+[node name="SFXSlider" type="HSlider" parent="VBoxContainer"]
+layout_mode = 2
+max_value = 1.0
+step = 0.001
+value = 1.0
+script = ExtResource("4_wv6sb")
+bus_name = "SFX"
+
+[node name="AudioStreamPlayer" type="AudioStreamPlayer" parent="VBoxContainer"]
+stream = ExtResource("5_iganx")
+autoplay = true
+bus = &"Music"
 
 [connection signal="pressed" from="VBoxContainer/Button_EnterPlatformer" to="." method="_on_button_enter_platformer_pressed"]
 [connection signal="pressed" from="VBoxContainer/Button_EnterTopDown" to="." method="_on_button_enter_top_down_pressed"]

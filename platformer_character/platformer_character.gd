@@ -59,6 +59,8 @@ const movement_multiplier = 32.0
 @export_range(0, 0.3) var coyote_time : float
 ## How far from ground should we cache your jump?
 @export_range(0, 0.3) var jump_buffer : float
+@export_category("Jumping Sounds")
+@export var jump_sound : AudioStreamPlayer
 
 
 # Calculations
@@ -296,6 +298,7 @@ func do_a_jump() -> void:
 	
 	if is_on_floor() or (coyote_time_counter > 0.03 and coyote_time_counter < coyote_time) or can_jump_again:
 		do_a_jump_calc()
+		jump_sound.play()
 		
 func do_a_jump_calc() -> void:
 	jumped.emit()

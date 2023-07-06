@@ -1,8 +1,10 @@
-[gd_scene load_steps=4 format=3 uid="uid://kpreyylbb70t"]
+[gd_scene load_steps=6 format=3 uid="uid://kpreyylbb70t"]
 
 [ext_resource type="Script" path="res://world.gd" id="1_6088q"]
 [ext_resource type="TileSet" uid="uid://bdu72orqistex" path="res://platformer_world/basic_tile_set.tres" id="1_q7hhx"]
 [ext_resource type="PackedScene" uid="uid://dd13anvv8vkkh" path="res://platformer_character/platformer_character.tscn" id="2_hvihg"]
+[ext_resource type="AudioStream" uid="uid://b1pgpjs2vx71t" path="res://Sounds/reverb-001.mp3" id="4_mqvew"]
+[ext_resource type="AudioStream" uid="uid://c02bvh0f47oco" path="res://Sounds/jump.wav" id="5_y6mqv"]
 
 [node name="PlatformerWorld" type="Node2D"]
 script = ExtResource("1_6088q")
@@ -24,7 +26,7 @@ layer_1/tile_data = PackedInt32Array(1507367, 131073, 3, 1441831, 131073, 2, 150
 position = Vector2(586, 704)
 zoom = Vector2(2, 2)
 
-[node name="PlatformerCharacter" parent="." instance=ExtResource("2_hvihg")]
+[node name="PlatformerCharacter" parent="." node_paths=PackedStringArray("jump_sound") instance=ExtResource("2_hvihg")]
 position = Vector2(586, 704)
 max_speed = 9.01
 max_air_acceleration = 43.6
@@ -42,6 +44,15 @@ jump_cut_off = 2.9
 in_air_speed_limit = 1000.0
 coyote_time = 0.2
 jump_buffer = 0.2
+jump_sound = NodePath("jump_sound")
 
 [node name="RemoteTransform2D" type="RemoteTransform2D" parent="PlatformerCharacter"]
 remote_path = NodePath("../../Camera2D")
+
+[node name="music" type="AudioStreamPlayer" parent="PlatformerCharacter"]
+stream = ExtResource("4_mqvew")
+autoplay = true
+bus = &"Music"
+
+[node name="jump_sound" type="AudioStreamPlayer" parent="PlatformerCharacter"]
+stream = ExtResource("5_y6mqv")
